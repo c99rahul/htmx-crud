@@ -1,0 +1,13 @@
+<div id="todo-list" class="space-y-2">
+    <% if (todos && todos.length > 0) { %>
+        <ul class="divide-y divide-gray-200 bg-white rounded-lg shadow">
+            <% [...todos].reverse().forEach(todo => { %>
+                <%- include('todo-item', { todo }) %>
+            <% }) %>
+        </ul>
+    <% } else { %>
+        <div class="bg-white rounded-lg shadow px-4 py-5">
+            <p class="text-gray-500 text-center">No todos yet!</p>
+        </div>
+    <% } %>
+</div>

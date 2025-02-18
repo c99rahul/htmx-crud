@@ -1,0 +1,22 @@
+{
+  "name": "htmx-express-supabase-crud",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "dev": "node --env-file=.env --watch app.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.48.1",
+    "body-parser": "^1.20.3",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "htmx.org": "2.0.4",
+    "pug": "^3.0.3"
+  }
+}
