@@ -1,22 +1,35 @@
-<li id="todo-<%= todo.id %>" class="todo-item">
-    <form hx-put="/todos/<%= todo.id %>"
-          hx-target="#todo-<%= todo.id %>"
-          hx-swap="outerHTML"
-          class="flex items-center gap-3 px-4 py-3">
-        <input type="checkbox"
-               name="completed"
-               <%= todo.completed ? 'checked' : '' %>
-               onchange="this.form.requestSubmit()"
-               class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500">
-        <span class="flex-1 text-gray-900 <%= todo.completed ? 'line-through text-gray-500' : '' %>">
-            <%= todo.task %>
-        </span>
-        <button type="button"
-                hx-delete="/todos/<%= todo.id %>"
-                hx-target="#todo-<%= todo.id %>"
-                hx-swap="outerHTML"
-                class="text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50">
-            Delete
-        </button>
-    </form>
+<li
+  id="todo-<%= todo.id %>"
+  class="todo-item"
+>
+  <form
+    hx-put="/todos/<%= todo.id %>"
+    hx-target="#todo-<%= todo.id %>"
+    hx-swap="outerHTML"
+    hx-trigger="change"
+    class="flex items-center gap-3 px-4 py-3"
+  >
+    <input type="checkbox" id="todo-item-<%= todo.id %>" name="completed" <%= todo.completed ?
+    'checked' : '' %> class="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500" >
+    <input
+      type="hidden"
+      name="task"
+      value="<%= todo.task %>"
+    />
+    <label
+      for="todo-item-<%= todo.id %>"
+      class="cursor-pointer flex-1 <%= todo.completed ? 'line-through text-gray-500' : 'text-gray-900' %>"
+    >
+      <%= todo.task %>
+    </label>
+    <button
+      type="button"
+      hx-delete="/todos/<%= todo.id %>"
+      hx-target="#todo-<%= todo.id %>"
+      hx-swap="outerHTML"
+      class="text-red-600 hover:text-red-800 px-2 py-1 rounded hover:bg-red-50"
+    >
+      Delete
+    </button>
+  </form>
 </li>
