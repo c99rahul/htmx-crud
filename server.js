@@ -13,7 +13,6 @@ const host = process.env.HOST || 'localhost';
 
 app.set('view engine', 'ejs'); // Tell Express to use Pug
 app.use(bodyParser.urlencoded({ extended: true })); // For parsing form data
-app.use(express.static('public')); // Serve static files (HTML, CSS, JS)
 app.use('/js', express.static(path.join(__dirname, 'node_modules/htmx.org/dist')));
 
 const supabaseUrl = process.env.SUPABASE_URL;
@@ -22,10 +21,6 @@ const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Routes
 app.get('/', async (req, res) => {
-  res.render('index');
-});
-
-app.get('/todos', async (req, res) => {
   try {
     const { data: todos, error } = await supabase
       .from('todos')
@@ -33,15 +28,15 @@ app.get('/todos', async (req, res) => {
       .order('created_at', { ascending: false });
     if (error) throw error;
 
-    res.render('todo-list', {
+    res.render('index', {
       todos: todos || [],
       error: null,
     });
   } catch (error) {
     console.error('Error fetching todos:', error);
-    res.render('todo-list', {
+    res.render('index', {
       todos: [],
-      error: 'Failed to load todos',
+      error: error
     });
   }
 });
@@ -57,21 +52,21 @@ app.post('/todos', async (req, res) => {
     const { error } = await supabase
       .from('todos')
       .insert([{ task: task.trim() }])
-      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
     // Fetch updated list
-    const { data: todos } = await supabase
+    const { data: todos, error: fetchError} = await supabase
       .from('todos')
       .select('*')
       .order('created_at', { ascending: false });
-    
-    res.setHeader('HX-Trigger', 'resetTodoForm');
+
+    if (fetchError) throw fetchError;
+
     res.render('partials/todo-list', { todos });
   } catch (error) {
     console.error('Error creating todo:', error);
-    res.render('partials/error', { message: 'Failed to create todo' });
+    res.render('partials/error', { message: error });
   }
 });
 
@@ -116,8 +111,7 @@ app.put('/todos/:id', async (req, res) => {
 
     res.render('partials/todo-item', { todo });
   } catch (error) {
-    console.error('Error updating todo:', error);
-    res.render('partials/error', { message: 'Failed to update todo' });
+    res.render('partials/error', { message: error });
   }
 });
 
@@ -133,7 +127,6 @@ app.delete('/todos/:id', async (req, res) => {
       .from('todos')
       .delete()
       .eq('id', id)
-      .order('created_at', { ascending: false });
 
     if (error) throw error;
 
@@ -143,16 +136,8 @@ app.delete('/todos/:id', async (req, res) => {
       .select('*')
       .order('created_at', { ascending: false });
 
-    if (!remainingTodos || remainingTodos.length === 0) {
-      // If no todos left, render the empty state
-      // If no todos left, retarget to the entire list and replace it
-      res.setHeader('HX-Retarget', '#todo-list');
-      res.setHeader('HX-Reswap', 'outerHTML');
-      return res.render('partials/todo-list', { todos: [] });
-    }
-
-    // Otherwise send empty response for the individual item deletion
-    res.status(200).send('');
+    res.setHeader('HX-Retarget', '#todo-list');
+    res.render('partials/todo-list', { todos: remainingTodos });
   } catch (error) {
     console.error('Error deleting todo:', error);
     res.render('partials/error', { message: 'Failed to delete todo' });

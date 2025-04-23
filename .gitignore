@@ -29,3 +29,6 @@ yarn-error.log*
 # Ignore generated files
 *.bak
 *.tmp
+
+# Ignore editor-only files
+.prettierrc
