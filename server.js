@@ -11,7 +11,7 @@ const app = express();
 const port = process.env.PORT || 3000;
 const host = process.env.HOST || 'localhost';
 
-app.set('view engine', 'ejs'); // Tell Express to use Pug
+app.set('view engine', 'ejs'); // Tell Express to use ejs
 app.use(bodyParser.urlencoded({ extended: true })); // For parsing form data
 app.use('/js', express.static(path.join(__dirname, 'node_modules/htmx.org/dist')));
 
